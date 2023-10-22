@@ -107,24 +107,37 @@ f1_constructors_rank_by_race %>%
 gg_record(
   dir = file.path(tempdir(),"recording"),
   device = "png",
-  width = 32.36,
-  height = 20,
-  units = "cm",
-  dpi = 300
-)
-
-gg_resize_film(
-  height = 4,
-  width = 6.47,
+  width = 4,
+  height = 6.47,
   units = "in",
   dpi = 350
 )
 
+# gg_resize_film(
+#   height = 4,
+#   width = 6.47,
+#   units = "in",
+#   dpi = 350
+# )
+
+geom_point(
+  aes(color=factor(cyl), fill=factor(carb)),
+  shape=21, size=4, stroke=4) +
+  scale_color_manual(values=alpha(rainbow(3), 0.2)) +
+  guides(fill=guide_legend(override.aes = list(color=NA)))
+
+ggplot(df, aes(x=wk, y=ht))  +
+  geom_line(aes(color=group)) +
+  geom_point(aes(fill=factor(flag)), size=4, shape=21, stroke=0) +
+  scale_fill_manual(values=color_flag) +
+  scale_colour_manual(values=color_group) +
+  theme_classic() +
+  labs(fill="Flag", colour="Group")
+
 f1_constructors_bump_chart <- f1_constructors_rank_by_race %>%
-  # ggplot(aes(Race_number) +
   ggplot(aes(Race_number, rank, col = F1_team)) +
-  geom_point(size = 3.5) +
-  geom_bump(size = 2.5) +
+  geom_bump(aes(color = F1_team), size = 2.5, lineend = "round") +
+  geom_point(aes(fill = F1_team), size = 0.7, shape = 21) +
   geom_text(
     data = f1_constructors_rank_by_race %>%
       filter(Race_number == 1),
@@ -137,7 +150,7 @@ f1_constructors_bump_chart <- f1_constructors_rank_by_race %>%
   ) +
   geom_text(
     data = f1_constructors_rank_by_race %>%
-      filter(Race_number == 17),
+      filter(Race_number == 18),
     aes(label = rank),
     hjust = 0,
     nudge_x = 0.5,
@@ -148,19 +161,19 @@ f1_constructors_bump_chart <- f1_constructors_rank_by_race %>%
   ) +
   annotate(
     "text",
-    x = c(1,17),
+    x = c(1,18),
     y = c(0.25, 0.25),
-    label = c('Bahrain', 'Qatar'),
+    label = c('Bahrain', 'USA - Austin'),
     hjust = c(0, 1),
     vjust = 1,
-    size = 16,
+    size = 12,
     fontface = "bold",
     family = "outfit"
   ) +
   scale_y_reverse(position = "right", breaks = 1:100) +
   scale_color_manual(values = f1_constructors_colors_main) +
   scale_fill_manual(values = f1_constructors_colors_secondary) +
-  coord_cartesian(xlim = c(-7.5, 20.5), ylim = c(11, 0.25), expand = F) +
+  coord_cartesian(xlim = c(-7.5, 21.5), ylim = c(11, 0.25), expand = F) +
   theme_minimal() +
   theme(legend.position = "none",
         panel.grid = element_blank(),
@@ -179,13 +192,13 @@ f1_constructors_bump_chart <- f1_constructors_rank_by_race %>%
        y = NULL,
        title = "Constructors - how it's going",
        subtitle = "F1 constructors battle 2023",
-       caption="**Data**pitwall.app **| Plot**Allan James") +
+       caption="**Data** pitwall.app **| Plot** Allan James @allanjames1506") +
   theme(text = element_text(family = 'orbitron'))
 
 f1_constructors_bump_chart 
 
-ggsave('./03_plots/f1_constructors_bump_plot2.png', dpi = 300, height = 4, width = 6.47, units = 'in')
-dev.off()
+ggsave('./03_plots/f1_constructors_bump_plot3.png', dpi = 350, height = 4, width = 6.47, units = 'in')
+
 # 1. Set fonts----
 ## Loading Google fonts (https://fonts.google.com/)
 
@@ -221,7 +234,7 @@ f1_constructors_colors_secondary <- c(
   "Alfa Romeo" = "#241F21",
   "Alpha Tauri" = "#FFFFFF",
   "Alpine" = "#FFFFFF",
-  "Aston Martin" = "#666769",
+  "Aston Martin" = "grey50",
   "Ferrari" = "#FFF200",
   "Haas" = "#FFFFFF",
   "McLaren" = "#000000",
