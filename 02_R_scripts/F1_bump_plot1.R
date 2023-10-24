@@ -17,6 +17,8 @@ library(gt)
 library(showtext)
 library(camcorder)
 library(readr)
+library(gganimate)
+devtools::install_github("thomasp85/transformr")
 
 # Repo link: https://github.com/rfordatascience/tidytuesday/tree/master/data/2022/2022-07-12
 
@@ -120,19 +122,21 @@ gg_record(
 #   dpi = 350
 # )
 
-geom_point(
-  aes(color=factor(cyl), fill=factor(carb)),
-  shape=21, size=4, stroke=4) +
-  scale_color_manual(values=alpha(rainbow(3), 0.2)) +
-  guides(fill=guide_legend(override.aes = list(color=NA)))
+# geom_point(
+#   aes(color=factor(cyl), fill=factor(carb)),
+#   shape=21, size=4, stroke=4) +
+#   scale_color_manual(values=alpha(rainbow(3), 0.2)) +
+#   guides(fill=guide_legend(override.aes = list(color=NA)))
+# 
+# ggplot(df, aes(x=wk, y=ht))  +
+#   geom_line(aes(color=group)) +
+#   geom_point(aes(fill=factor(flag)), size=4, shape=21, stroke=0) +
+#   scale_fill_manual(values=color_flag) +
+#   scale_colour_manual(values=color_group) +
+#   theme_classic() +
+#   labs(fill="Flag", colour="Group")
 
-ggplot(df, aes(x=wk, y=ht))  +
-  geom_line(aes(color=group)) +
-  geom_point(aes(fill=factor(flag)), size=4, shape=21, stroke=0) +
-  scale_fill_manual(values=color_flag) +
-  scale_colour_manual(values=color_group) +
-  theme_classic() +
-  labs(fill="Flag", colour="Group")
+# https://community.rstudio.com/t/ggplot-set-colors-separately-for-geom-point-and-geom-line-manually/13901
 
 f1_constructors_bump_chart <- f1_constructors_rank_by_race %>%
   ggplot(aes(Race_number, rank, col = F1_team)) +
@@ -243,5 +247,93 @@ f1_constructors_colors_secondary <- c(
   "Williams" = "#000000"
 )
     
-  
+p <- ggplot(data = f1_constructors_rank_by_race, aes(Race_number, rank, col = F1_team)) +
+  geom_bump(aes(color = F1_team), size = 2.5, lineend = "round") +
+  #geom_point(aes(fill = F1_team), size = 0.7, shape = 21) +
+  geom_text(
+    data = f1_constructors_rank_by_race %>%
+      filter(Race_number == 1),
+    aes(label = F1_team),
+    size = 20,
+    hjust = 1,
+    nudge_x = -0.5,
+    fontface = "bold",
+    family = "orbitron"
+  ) +
+  geom_text(
+    data = f1_constructors_rank_by_race %>%
+      filter(Race_number == 18),
+    aes(label = rank),
+    hjust = 0,
+    nudge_x = 0.5,
+    alpha = 0.7,
+    size = 46,
+    fontface = "bold",
+    family = "orbitron"
+  ) +
+  annotate(
+    "text",
+    x = c(1,18),
+    y = c(0.25, 0.25),
+    label = c('Bahrain', 'USA - Austin'),
+    hjust = c(0, 1),
+    vjust = 1,
+    size = 12,
+    fontface = "bold",
+    family = "outfit"
+  ) +
+  scale_y_reverse(position = "right", breaks = 1:100) +
+  scale_color_manual(values = f1_constructors_colors_main) +
+  scale_fill_manual(values = f1_constructors_colors_secondary) +
+  coord_cartesian(xlim = c(-7.5, 21.5), ylim = c(11, 0.25), expand = F) +
+  theme_minimal() +
+  theme(legend.position = "none",
+        panel.grid = element_blank(),
+        panel.background = element_rect(fill = "gray50", color = "transparent"),
+        plot.background = element_rect(fill = "gray50"),
+        text = element_text(color = "floralwhite"),
+        plot.title = element_text(size = 50, face = "bold"),
+        plot.subtitle = element_text(size =40),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.caption = element_markdown(
+          size = 25, family = "orbitron", color = "#21435f",hjust = 0.5)) +
+  labs(x = NULL,
+       y = NULL,
+       title = "Constructors - how it's going",
+       subtitle = "F1 constructors battle 2023",
+       caption="**Data** pitwall.app **| Plot** Allan James @allanjames1506") +
+  theme(text = element_text(family = 'orbitron'))
 
+f1_constructors_rank_by_race_2teams <- f1_constructors_rank_by_race %>% 
+  filter(F1_team == c('McLaren', 'Aston Martin'))
+
+p2 <- ggplot(data = f1_constructors_rank_by_race, aes(Race_number, rank, col = F1_team)) +
+  geom_line(aes(color = F1_team, group = F1_team), size = 2.5, lineend = "round") +
+  #geom_point(aes(fill = F1_team), size = 1.5, shape = 21) +
+  #scale_color_manual(values = f1_constructors_colors_main) +
+  scale_y_reverse(position = "right", breaks = 1:100) +
+  scale_color_manual(values = f1_constructors_colors_main) +
+  #scale_fill_manual(values = f1_constructors_colors_secondary) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        panel.grid = element_blank(),
+        panel.background = element_rect(fill = "gray70", color = "transparent"),
+        plot.background = element_rect(fill = "gray70"),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_text(size=50, family = "orbitron"),
+        axis.ticks.y = element_blank(),
+        legend.text=element_text(size=40, family = "orbitron", colour = 'gray20'),
+        legend.title=element_blank())
+
+ggsave('./03_plots/f1_constructors_bump_plot4.png', dpi = 350, height = 4, width = 6.47, units = 'in')
+
+p
+p2
+
+p2 + transition_time(Race_number)
