@@ -1,5 +1,3 @@
-##### Tidy Tuesday 2022 - Week 28 #####
-#### By: Stephan Teodosescu ####
 
 library(tidyverse)
 library(ggbump)
@@ -18,64 +16,64 @@ library(showtext)
 library(camcorder)
 library(readr)
 library(gganimate)
-devtools::install_github("thomasp85/transformr")
+#devtools::install_github("thomasp85/transformr")
 
 # Repo link: https://github.com/rfordatascience/tidytuesday/tree/master/data/2022/2022-07-12
 
-## Load data
-flights <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-07-12/flights.csv") %>%
-  janitor::clean_names()
-
-## Data preparation
-
-# table(flights$state_name)
-
-# change Turkey's name as the formatting doesn't play nice with code
-flights <- flights %>%
-  mutate(state_name = case_when(
-    state_name == "Türkiye" ~ "Turkey",
-    TRUE ~ state_name
-  ))
-
-colnames(flights)
-
-country_flights_by_year <- flights %>%
-  select(year, state = state_name, flights = flt_tot_1) %>%
-  group_by(year, state) %>%
-  summarise(flights = sum(flights))
-
-country_rank_by_year <- country_flights_by_year %>%
-  group_by(year) %>%
-  mutate(
-    rank = row_number(desc(flights))
-  ) %>%
-  ungroup() %>%
-  arrange(rank, year)
-
-glimpse(country_rank_by_year)
-
-max_rank <- 12
-
-todays_top <- country_rank_by_year %>%
-  filter(year == 2022, rank <= max_rank) %>%
-  pull(state)
-
-flights_bump_chart <- country_rank_by_year %>%
-  filter(state %in% todays_top) %>%
-  ggplot(aes(year, rank, col = state)) +
-  geom_point(size = 2) +
-  geom_bump(size = 1) +
-  geom_text(
-    data = country_rank_by_year %>%
-      filter(year == 2016, state %in% todays_top),
-    aes(label = state),
-    hjust = 1,
-    nudge_x = -0.1,
-    fontface = "bold",
-    family = "Outfit"
-  )
-
-flights_bump_chart
+# ## Load data
+# flights <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-07-12/flights.csv") %>%
+#   janitor::clean_names()
+# 
+# ## Data preparation
+# 
+# # table(flights$state_name)
+# 
+# # change Turkey's name as the formatting doesn't play nice with code
+# flights <- flights %>%
+#   mutate(state_name = case_when(
+#     state_name == "Türkiye" ~ "Turkey",
+#     TRUE ~ state_name
+#   ))
+# 
+# colnames(flights)
+# 
+# country_flights_by_year <- flights %>%
+#   select(year, state = state_name, flights = flt_tot_1) %>%
+#   group_by(year, state) %>%
+#   summarise(flights = sum(flights))
+# 
+# country_rank_by_year <- country_flights_by_year %>%
+#   group_by(year) %>%
+#   mutate(
+#     rank = row_number(desc(flights))
+#   ) %>%
+#   ungroup() %>%
+#   arrange(rank, year)
+# 
+# glimpse(country_rank_by_year)
+# 
+# max_rank <- 12
+# 
+# todays_top <- country_rank_by_year %>%
+#   filter(year == 2022, rank <= max_rank) %>%
+#   pull(state)
+# 
+# flights_bump_chart <- country_rank_by_year %>%
+#   filter(state %in% todays_top) %>%
+#   ggplot(aes(year, rank, col = state)) +
+#   geom_point(size = 2) +
+#   geom_bump(size = 1) +
+#   geom_text(
+#     data = country_rank_by_year %>%
+#       filter(year == 2016, state %in% todays_top),
+#     aes(label = state),
+#     hjust = 1,
+#     nudge_x = -0.1,
+#     fontface = "bold",
+#     family = "Outfit"
+#   )
+# 
+# flights_bump_chart
 
 
 f1_constructors <- read.csv('./00_raw_data/F1_constructors_2023.csv') %>% 
@@ -115,12 +113,12 @@ gg_record(
   dpi = 350
 )
 
-# gg_resize_film(
-#   height = 4,
-#   width = 6.47,
-#   units = "in",
-#   dpi = 350
-# )
+gg_resize_film(
+  height = 4,
+  width = 6.47,
+  units = "in",
+  dpi = 350
+)
 
 # geom_point(
 #   aes(color=factor(cyl), fill=factor(carb)),
@@ -209,7 +207,7 @@ ggsave('./03_plots/f1_constructors_bump_plot3.png', dpi = 350, height = 4, width
 # https://www.rdocumentation.org/packages/sysfonts/versions/0.8.8/topics/font_families_google
 fonts <- font_families_google(db_cache = TRUE, handle = curl::new_handle())
 match('Rubik', fonts)
-fonts[1000:1200]
+fonts[800:1000]
 
 font_add_google("Outfit","outfit")
 font_add_google("Rubik","rubik")
@@ -292,7 +290,6 @@ p <- ggplot(data = f1_constructors_rank_by_race, aes(Race_number, rank, col = F1
         panel.background = element_rect(fill = "gray50", color = "transparent"),
         plot.background = element_rect(fill = "gray50"),
         text = element_text(color = "floralwhite"),
-        plot.title = element_text(size = 50, face = "bold"),
         plot.subtitle = element_text(size =40),
         axis.text.x = element_blank(),
         axis.ticks.x = element_blank(),
@@ -311,7 +308,7 @@ f1_constructors_rank_by_race_2teams <- f1_constructors_rank_by_race %>%
   filter(F1_team == c('McLaren', 'Aston Martin'))
 
 p2 <- ggplot(data = f1_constructors_rank_by_race, aes(Race_number, rank, col = F1_team)) +
-  geom_line(aes(color = F1_team, group = F1_team), size = 2.5, lineend = "round") +
+  geom_line(size = 2.5, lineend = "round") +
   #geom_point(aes(fill = F1_team), size = 1.5, shape = 21) +
   #scale_color_manual(values = f1_constructors_colors_main) +
   scale_y_reverse(position = "right", breaks = 1:100) +
@@ -337,3 +334,40 @@ p
 p2
 
 p2 + transition_time(Race_number)
+
+
+animate_F1_constructors <- f1_constructors_rank_by_race %>%
+  ggplot() +
+  geom_col(aes(rank, points, fill = F1_team)) +
+  geom_text(aes(rank, points, label = as.character(points)), hjust = -0.1) +
+  geom_text(aes(rank, y=0 , label = F1_team), hjust = 1.1) + 
+  geom_text(aes(x=10, y=max(points) , label = as.factor(Race_number)), vjust = 0.2, alpha = 0.5,  col = "gray", size = 20) +
+  coord_flip(clip = "off", expand = FALSE) + 
+  scale_x_reverse() +
+  scale_fill_manual(values = f1_constructors_colors_main) +
+  theme_minimal() +
+  theme(panel.grid = element_blank(),
+        panel.background = element_rect(fill = "gray70", color = "transparent"),
+        plot.background = element_rect(fill = "gray70"),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank()) 
+#+
+  # theme(
+  #   panel.grid = element_blank(), 
+  #   legend.position = "none",
+  #   axis.ticks.y = element_blank(),
+  #   axis.title.y = element_blank(),
+  #   axis.text.y = element_blank(),
+  #   plot.margin = margin(1, 4, 1, 3, "cm")
+  # ) +
+  transition_states(Race_number, state_length = 2, transition_length = 2) +
+  enter_fade() +
+  exit_fade() + 
+  ease_aes('quadratic-in-out')
+animate_F1_constructors
+
+animate(animate_F1_constructors, width = 1000, height = 600, fps = 25, duration = 15, rewind = FALSE)
