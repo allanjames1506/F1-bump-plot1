@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+.DS_Store
 
 # ignore dataset folder and subfolders
 00_raw_data/
